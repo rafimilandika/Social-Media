@@ -1,0 +1,433 @@
+.kontenerDashboard {
+  width: 100vw;
+  height: 100vh;
+  background-color: red;
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+}
+.kontenerDashboard.with-right-sidebar {
+  /* Jika postSaya true, aktifkan 3 kolom */
+  grid-template-columns: 1fr 3fr 2fr; /* 3 kolom: kiri, tengah, kanan */
+}
+.fungsiSidebar {
+  margin-top: 30px;
+  height: 400px;
+  /* background-color: red; */
+  padding: 0px 5px;
+}
+.SidebarPostSaya {
+  /* background-color: green; */
+  /* justify-content: center; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+.SidebarPostSaya:hover {
+  background-color: #ffa7a6;
+}
+.SidebarCariOrang {
+  /* background-color: red; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+.SidebarCariOrang:hover {
+  background-color: #ffa7a6;
+}
+.kontenerDashboard .kiri {
+  overflow: hidden;
+  background-color: #fadde1;
+  padding: 10px 10px 0px 10px;
+
+  position: relative;
+}
+.kontenerDashboard .tengah {
+  background-color: #fff1f5;
+  padding-top: 5px;
+  padding-left: 20px;
+  overflow-y: scroll;
+}
+.kontenerDashboard .kanan {
+  background-color: #fadde1;
+  overflow-y: scroll;
+  padding: 0px 10px;
+}
+.postSaya {
+  margin-top: 10px;
+}
+.postSaya .judul {
+  margin-bottom: 20px;
+  padding-top: 5px;
+}
+.postSaya .post .isi_postingan {
+  width: 400px;
+  /* background-color: aqua; */
+  overflow-wrap: break-word;
+}
+.postSaya .komentar button {
+  background-color: #fff1f5;
+}
+.garisPembagi {
+  width: 100%;
+  height: 1px;
+  background-color: black;
+  margin-bottom: 10px;
+}
+.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+.akun {
+  margin-top: 20px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 20px;
+  font-size: 15px;
+  /* background-color: green; */
+  padding: 5px 5px;
+  border-radius: 5px;
+}
+.akun:hover {
+  background-color: #ffa7a6;
+}
+.akun img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  background-color: white;
+}
+.logout {
+  position: absolute;
+  bottom: 10px;
+  /* background-color: red; */
+  width: 90%;
+  border-radius: 5px;
+}
+.logout:hover {
+  background-color: #ffa7a6;
+}
+.logout button {
+  margin-left: -10px;
+  width: 100%;
+  height: 50px;
+  background-color: transparent;
+  border: none;
+  color: black;
+  cursor: pointer;
+  font-weight: 800;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+/* AKUNVIEW------------------------------------------------------ */
+.akunView {
+  /* background-color: red; */
+}
+.akunView .kembali button {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #ffa7a6;
+  margin: 10px 0px;
+  font-size: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.akunView img {
+  width: 100%;
+  background-color: white;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+.akunView h2 {
+  font-size: 15px;
+}
+.akunView .edit button {
+  margin-top: 20px;
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #ffa7a6;
+  /* font-weight: 800; */
+  font-size: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.dataUser {
+  text-align: center;
+}
+
+/* tengah--------------------------------------------------------- */
+.title {
+  margin-bottom: 30px;
+}
+.searchPost {
+  width: 600px;
+  height: 35px;
+  /* background-color: red; */
+  margin-bottom: 10px;
+}
+.searchPost input {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  padding: 0px 10px;
+  box-sizing: border-box;
+}
+.Tulispost {
+  width: 600px;
+  padding-bottom: 20px;
+}
+.Tulispost form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.Tulispost img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+.Tulispost textarea {
+  width: 100%;
+  height: 100px;
+  resize: none;
+  border: none;
+  padding: 10px;
+  padding-left: 50px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.Tulispost button {
+  height: 30px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #fcd5ce;
+}
+/* TIMELINE------------------------------------------------------ */
+.timeline {
+  /* background-color: red; */
+  width: 600px;
+}
+.userPost h4 {
+  width: fit-content;
+  /* background-color: red; */
+  cursor: pointer;
+}
+.post {
+  display: grid;
+  grid-template-columns: 1fr 10fr;
+  margin-bottom: 10px;
+}
+.post img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.post h5 {
+  margin-bottom: 5px;
+}
+.post .isi_postingan {
+  /* background-color: green; */
+  width: 550px;
+  /* word-wrap: break-word; */
+  overflow-wrap: break-word;
+  margin-bottom: 20px;
+}
+.isi {
+  /* background-color: red; */
+  position: relative;
+}
+.hapusPost {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+.hapusPost button {
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.hapusPost button:hover i {
+  color: red;
+}
+.hapusPost i {
+  font-size: 20px;
+}
+.komentar {
+  /* background-color: red; */
+}
+.tombolKomentar {
+  background-color: #fcd5ce;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.buatKomentar {
+  /* background-color: green; */
+  padding-left: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.buatKomentar img {
+  position: absolute;
+  top: 5px;
+  left: 25px;
+}
+.buatKomentar textarea {
+  border: none;
+  padding: 10px;
+  padding-left: 50px;
+  resize: none;
+  margin-bottom: 5px;
+}
+.buatKomentar button {
+  height: 30px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #fcd5ce;
+}
+.totalKomentar {
+  cursor: pointer;
+}
+.listKomentar {
+  margin-top: 10px;
+  width: 550px;
+  padding-left: 20px;
+  box-sizing: border-box;
+  /* background-color: purple; */
+  display: flex;
+  gap: 10px;
+}
+.isiListKomentar {
+  width: 480px;
+  overflow-wrap: break-word;
+}
+.isiListKomentar h6 {
+  margin-bottom: 10px;
+}
+/* EDITAKUN----------------------------------------------------- */
+.editAkun {
+  margin-top: 10px;
+  /* background-color: red; */
+}
+.editAkun label {
+  font-weight: 500;
+}
+.editAkun .username {
+  margin-bottom: 10px;
+}
+.editAkun .email {
+  margin-bottom: 10px;
+}
+.editAkun button {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #ffa7a6;
+  margin: 5px 0px;
+}
+:is(.passwordSekarang, .passwordBaru, .passwordBaruC) {
+  margin-top: 10px;
+}
+.passwordBaruC {
+  margin-bottom: 10px;
+}
+/* PROFILE------------------------------------------------------------ */
+.profile {
+  padding-top: 10px;
+  /* background-color: green; */
+}
+
+.profileUser {
+  padding-top: 20px;
+  /* background-color: red; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.profileUser img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+.profileUserDetail h2 {
+  font-weight: 500;
+  font-size: 20px;
+}
+/* CARI ORANG--------------------------------------------------------- */
+.cariOrang {
+  padding-top: 10px;
+  /* background-color: blue; */
+}
+.cariOrang input {
+  width: 95%;
+  height: 30px;
+  border-radius: 10px;
+  padding: 0px 10px;
+}
+.listUser {
+  margin-top: 10px;
+  padding-left: 20px;
+  /* background-color: red; */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cariOrang .user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+.cariOrang .user:hover {
+  background-color: #ffa7a6;
+  border-radius: 10px;
+}
+.cariOrang .user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.cariOrang h1 {
+  font-size: 20px;
+  font-weight: 500;
+}
+.belumPosting {
+  text-align: center;
+}
+.belumPosting h1 {
+  font-weight: 600;
+}
