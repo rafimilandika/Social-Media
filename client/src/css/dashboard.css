@@ -42,6 +42,19 @@
 .SidebarCariOrang:hover {
   background-color: #ffa7a6;
 }
+.SidebarMessage {
+  /* background-color: red; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+.SidebarMessage:hover {
+  background-color: #ffa7a6;
+}
 .kontenerDashboard .kiri {
   overflow: hidden;
   background-color: #fadde1;
@@ -387,6 +400,17 @@
   font-weight: 500;
   font-size: 20px;
 }
+.tombolKirimPesan {
+  /* background-color: red; */
+  margin-top: 10px;
+}
+.tombolKirimPesan button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #ffa7a6;
+}
 /* CARI ORANG--------------------------------------------------------- */
 .cariOrang {
   padding-top: 10px;
@@ -430,4 +454,182 @@
 }
 .belumPosting h1 {
   font-weight: 600;
+}
+/* MESSAGE-------------------------------------------------------------- */
+.messages {
+  /* background-color: green; */
+  padding-top: 5px;
+}
+.percakapanBaru {
+  /* background-color: aqua; */
+  height: 40px;
+  margin: 10px 0px;
+}
+.percakapanBaru button {
+  height: 100%;
+  padding: 0px 12px;
+  background-color: #ffa7a6;
+  cursor: pointer;
+  border-radius: 10px;
+  border: none;
+}
+.convList {
+  /* background-color: red; */
+}
+.conv {
+  /* background-color: blue; */
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+}
+.conv:hover {
+  background-color: #ffa7a6;
+  border-radius: 10px;
+}
+.conv img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.conv h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.conv h4 {
+  font-size: 15px;
+  font-weight: 400;
+}
+.listUserMessages {
+  /* background-color: red; */
+}
+.listUserMessages input {
+  /* background-color: green; */
+  width: 100%;
+  height: 30px;
+  /* border: none; */
+  border-radius: 5px;
+  padding: 0px 10px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+.listUserMessages .user {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+}
+.userImg img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.listUserMessages h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.listUserMessages .user:hover {
+  background-color: #ffa7a6;
+  border-radius: 10px;
+}
+.back {
+  height: 40px;
+  /* background-color: red; */
+}
+.back button {
+  height: 100%;
+  padding: 0px 12px;
+  background-color: #ffa7a6;
+  cursor: pointer;
+  border-radius: 10px;
+  border: none;
+}
+.chatAtas {
+  /* background-color: rebeccapurple; */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.chat-header h2 {
+  font-weight: 400;
+}
+.messages-list {
+  /* background-color: yellow; */
+  height: 600px;
+  overflow-y: scroll;
+  padding: 0px 10px;
+  display: flex;
+  flex-direction: column;
+}
+.message-item {
+  margin-bottom: 5px;
+  display: flex; /* Jadikan setiap item pesan flex container */
+  align-items: flex-end;
+  gap: 5px;
+}
+.message-time {
+  font-size: 13px;
+}
+.received {
+  justify-content: flex-start;
+}
+.received .message-content {
+  /* Terapkan gaya ke konten pesan */
+  background-color: #a5a68f;
+  width: fit-content;
+  padding: 8px 12px; /* Sesuaikan padding */
+  border-radius: 15px 15px 15px 0px; /* Sudut melengkung */
+  color: white;
+}
+.sent {
+  justify-content: flex-end;
+}
+.sent .message-content {
+  /* Terapkan gaya ke konten pesan */
+  background-color: #ceaaaa;
+  width: fit-content;
+  padding: 8px 12px; /* Sesuaikan padding */
+  border-radius: 15px 15px 0px 15px; /* Sudut melengkung */
+  color: white;
+}
+.message-input-area {
+  padding-top: 20px;
+  /* background-color: red; */
+  height: 35px;
+  display: grid;
+  grid-template-columns: auto 50px;
+  gap: 5px;
+  /* overflow: hidden; */
+}
+.message-input-area input {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: none;
+  padding: 0px 10px;
+}
+.message-input-area button {
+  background-color: #62676b;
+  height: 100%;
+  border: none;
+  border-radius: 10px;
+}
+.message-input-area i {
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
 }

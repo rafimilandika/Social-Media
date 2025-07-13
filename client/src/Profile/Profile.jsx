@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { LoginContext } from "../Context";
 
-export default function Profile({ profileId }) {
+export default function Profile({ profileId, handleProfileMessage }) {
   const { currentUser } = useContext(LoginContext);
   const [profiles, setprofiles] = useState([]);
   const [userPost, setUserPost] = useState([]);
@@ -97,6 +97,9 @@ export default function Profile({ profileId }) {
       setListKomentar([]);
     }
   };
+  const handleKirimPesan = async (profileId) => {
+    handleProfileMessage(profileId);
+  };
   return (
     <div className="profile">
       {profiles.map((profile) => (
@@ -105,6 +108,15 @@ export default function Profile({ profileId }) {
           <div className="profileUserDetail">
             <h1>{profile.username}</h1>
             <h2>{profile.email}</h2>
+            {currentUser.id !== profile.id ? (
+              <div className="tombolKirimPesan">
+                <button onClick={() => handleKirimPesan(profile.id)}>
+                  Kirim Pesan
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       ))}

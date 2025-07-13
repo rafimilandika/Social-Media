@@ -71,10 +71,36 @@ db.connect((err) => {
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         		)
     		`;
+  const createTebleConversations = `
+       			CREATE TABLE IF NOT EXISTS conversations (
+            		id INT AUTO_INCREMENT PRIMARY KEY,
+                    user1_id INT NOT NULL,
+                    user2_id INT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE KEY (user1_id, user2_id), 
+                    FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE
+        		)
+    		`;
+  const createTebleMessages = `
+       			CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+);
+    		`;
   const allCreateTablesQuery = `
     ${createTableUsers};
     ${createTablePosts};
     ${createTableComments};
+    ${createTebleConversations};
+    ${createTebleMessages};
 `;
   db.query(allCreateTablesQuery, (err) => {
     if (err) {
@@ -678,9 +704,10 @@ app.get("/api/postProfileUser/:id", auth, (req, res) => {
 });
 // CARI ORANG---------------------------------------------------------------
 app.get("/api/getUsers", auth, (req, res) => {
+  const currentUserId = req.user.id;
   const sql =
-    "SELECT id, username, email, photo_profile, created_at FROM users";
-  db.query(sql, (err, results) => {
+    "SELECT id, username, email, photo_profile, created_at FROM users WHERE id != ?";
+  db.query(sql, [currentUserId], (err, results) => {
     if (err) {
       console.error("Error fetching user data:", err);
       return res.status(500).json({ error: "Gagal mengambil data users." });
@@ -696,6 +723,7 @@ app.get("/api/getUsers", auth, (req, res) => {
   });
 });
 app.get("/api/cariUser", auth, (req, res) => {
+  const currentUserId = req.user.id;
   const searchTerm = req.query.q;
   // console.log(searchTerm);
   if (!searchTerm || searchTerm.trim() === "") {
@@ -704,10 +732,10 @@ app.get("/api/cariUser", auth, (req, res) => {
       .json({ message: "Tidak ada kata kunci pencarian.", posts: [] });
   }
   const sql = `
-              SELECT id, username, email, photo_profile, created_at FROM users WHERE username LIKE ?
+              SELECT id, username, email, photo_profile, created_at FROM users WHERE username LIKE ? AND id != ? LIMIT 20;
           `;
   const searchPattern = `%${searchTerm}%`;
-  db.query(sql, [searchPattern], (err, rows) => {
+  db.query(sql, [searchPattern, currentUserId], (err, rows) => {
     if (err) {
       console.error("Error mengambil user:", err);
       return res
@@ -717,6 +745,272 @@ app.get("/api/cariUser", auth, (req, res) => {
     res.status(200).json({
       message: "Postingan berhasil dicari!",
       posts: rows,
+    });
+  });
+});
+app.get("/api/getUsersById", auth, (req, res) => {
+  const userId = req.query.userTujuan;
+  const sql = `
+              SELECT id, username, email, photo_profile, created_at FROM users WHERE id = ?;
+          `;
+  db.query(sql, [userId], (err, rows) => {
+    if (err) {
+      console.error("Error mengambil user:", err);
+      return res
+        .status(500)
+        .json({ error: "Gagal mengambil user karena kesalahan server." });
+    }
+    res.status(200).json({
+      message: "user berhasil dicari!",
+      user: rows[0],
+    });
+  });
+});
+// MESSAGES------------------------------------------------------------------
+app.post("/api/conversation", auth, (req, res) => {
+  const { targetUserId, currentUserId } = req.body;
+
+  if (!targetUserId || !currentUserId) {
+    return res
+      .status(400)
+      .json({ error: "Missing targetUserId or currentUserId." });
+  }
+  if (targetUserId === currentUserId) {
+    return res
+      .status(400)
+      .json({ error: "Cannot start a conversation with yourself." });
+  }
+
+  const user1 = Math.min(currentUserId, targetUserId);
+  const user2 = Math.max(currentUserId, targetUserId);
+
+  const findConvSql = `
+        SELECT id FROM conversations
+        WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)
+    `;
+  db.query(findConvSql, [user1, user2, user2, user1], (err, rows) => {
+    if (err) {
+      console.error("Error finding conversation:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to find or create conversation." });
+    }
+
+    if (rows.length > 0) {
+      return res.status(200).json({
+        message: "Conversation found!",
+        conversationId: rows[0].id,
+      });
+    } else {
+      const createConvSql =
+        "INSERT INTO conversations (user1_id, user2_id) VALUES (?, ?)";
+      db.query(createConvSql, [user1, user2], (err, result) => {
+        if (err) {
+          console.error("Error creating new conversation:", err);
+        } else {
+          res.status(201).json({
+            message: "New conversation created!",
+            conversationId: result.insertId,
+          });
+        }
+      });
+    }
+  });
+});
+
+app.get("/api/messages", auth, (req, res) => {
+  const convId = req.query.convId;
+  if (!convId) {
+    return res.status(400).json({ error: "Conversation ID is required." });
+  }
+  const currentUserId = req.user.id;
+  const verifyConvSql = `
+        SELECT id FROM conversations
+        WHERE id = ? AND (user1_id = ? OR user2_id = ?)
+    `;
+  db.query(
+    verifyConvSql,
+    [convId, currentUserId, currentUserId],
+    (err, convRows) => {
+      if (err) {
+        console.error("Error verifying conversation access:", err);
+        return res
+          .status(500)
+          .json({ error: "Server error during conversation access check." });
+      }
+      if (convRows.length === 0) {
+        return res.status(403).json({
+          error: "Access denied. You are not part of this conversation.",
+        });
+      }
+
+      const sql = `
+              SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at ASC;
+          `;
+      db.query(sql, [convId], (err, messages) => {
+        if (err) {
+          console.error("Error mengambil messages:", err);
+          return res.status(500).json({
+            error: "Gagal mengambil messages karena kesalahan server.",
+          });
+        }
+        res.status(200).json({
+          message: "messages berhasil dicari!",
+          messages: messages,
+        });
+      });
+    }
+  );
+});
+
+app.get("/api/messagesFetch", auth, (req, res) => {
+  const convId = req.query.convId;
+  const sql = `
+              SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at ASC;
+          `;
+  db.query(sql, [convId], (err, messages) => {
+    if (err) {
+      console.error("Error mengambil messages:", err);
+      return res.status(500).json({
+        error: "Gagal mengambil messages karena kesalahan server.",
+      });
+    }
+    res.status(200).json({
+      message: "messages berhasil dicari!",
+      messages: messages,
+    });
+  });
+});
+
+app.post("/api/createMessage", auth, (req, res) => {
+  const { conversationId, sender_id, content } = req.body;
+  const currentUserId = req.user.id;
+
+  const createMessage =
+    "INSERT INTO messages (conversation_id, sender_id, content) VALUES (?, ?, ?)";
+  db.query(
+    createMessage,
+    [conversationId, currentUserId, content],
+    (err, result) => {
+      if (err) {
+        console.error("Error creating new messages:", err);
+      } else {
+        res.status(201).json({
+          message: "New messages created!",
+          messagesId: result.insertId,
+        });
+      }
+    }
+  );
+});
+
+app.get("/api/getConversation", auth, (req, res) => {
+  const currentUserId = req.user.id;
+  if (!currentUserId) {
+    return res.status(401).json({ error: "Unauthorized: User ID not found." });
+  }
+  const findConvSql = `
+        SELECT
+            c.id AS conversation_id,
+            c.user1_id,
+            c.user2_id,
+            c.created_at AS conversation_created_at,
+            c.updated_at AS conversation_updated_at,
+            CASE
+                WHEN c.user1_id = ? THEN u2.id
+                ELSE u1.id
+            END AS other_user_id,
+            CASE
+                WHEN c.user1_id = ? THEN u2.username
+                ELSE u1.username
+            END AS other_username,
+            CASE
+                WHEN c.user1_id = ? THEN u2.photo_profile
+                ELSE u1.photo_profile
+            END AS other_photo_profile,
+            -- Menggunakan subquery terkorrelasi untuk mendapatkan pesan terakhir
+            (
+                SELECT content
+                FROM messages
+                WHERE conversation_id = c.id
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) AS last_message_content,
+            (
+                SELECT created_at
+                FROM messages
+                WHERE conversation_id = c.id
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) AS last_message_created_at,
+            (
+                SELECT sender_id
+                FROM messages
+                WHERE conversation_id = c.id
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) AS last_message_sender_id
+        FROM
+            conversations AS c
+        LEFT JOIN
+            users AS u1 ON c.user1_id = u1.id
+        LEFT JOIN
+            users AS u2 ON c.user2_id = u2.id
+        WHERE
+            (c.user1_id = ? OR c.user2_id = ?)
+            -- Pastikan hanya percakapan yang memiliki pesan (menggunakan COUNT > 0)
+            AND (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id) > 0
+        ORDER BY
+            c.updated_at DESC;
+    `;
+  db.query(
+    findConvSql,
+    [currentUserId, currentUserId, currentUserId, currentUserId, currentUserId],
+    (err, result) => {
+      if (err) {
+        console.error("Error find conversation:", err);
+      } else {
+        res.status(201).json({
+          message: "currentUserId finded!",
+          conversation: result,
+        });
+      }
+    }
+  );
+});
+
+app.get("/api/getLatestMessage", auth, (req, res) => {
+  const messagesId = req.query.messagesId;
+  const sql = `
+              SELECT created_at FROM messages WHERE id = ?;
+          `;
+  db.query(sql, [messagesId], (err, rows) => {
+    if (err) {
+      console.error("Error mengambil messages:", err);
+      return res
+        .status(500)
+        .json({ error: "Gagal mengambil messages karena kesalahan server." });
+    }
+    res.status(200).json({
+      message: "user berhasil dicari!",
+      latestMessage: rows[0],
+    });
+  });
+});
+app.put("/api/updateLatestConversation", auth, (req, res) => {
+  const { latestTime, convId } = req.body;
+  const finalSql = `UPDATE conversations SET updated_at = ? WHERE id = ?`;
+  db.query(finalSql, [latestTime, convId], (updateErr, result) => {
+    if (updateErr) {
+      console.error("Error mengupdate Data:", updateErr);
+      return res.status(500).json({ error: "Gagal mengupdate Data" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Data tidak ditemukan" });
+    }
+    res.status(200).json({
+      message: "Conversation updated successfully!",
+      affectedRows: result.affectedRows,
     });
   });
 });

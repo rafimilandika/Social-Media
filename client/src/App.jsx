@@ -169,7 +169,6 @@ export default function App() {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setCurrentUser(null);
-    alert("Anda telah logout.");
     navigate("/");
   }, [navigate]);
 

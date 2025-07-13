@@ -8,6 +8,7 @@ import Timeline from "../Timeline/Timeline.jsx";
 import PostSaya from "../PostsSaya/PostSaya.jsx";
 import Profile from "../Profile/Profile.jsx";
 import CariOrang from "../CariOrang/CariOrang.jsx";
+import Message from "../Message/Message.jsx";
 
 export default function Dashboard() {
   const { currentUser, handleLogout } = useContext(LoginContext);
@@ -20,9 +21,14 @@ export default function Dashboard() {
   const [isProfile, setIsProfile] = useState(false);
   const [profileId, setProfileId] = useState(null);
   const [cariOrang, setCariOrang] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [profileToMessageUserId, setProfileToMessageUserId] = useState(null);
+  const [profileToMessageUserData, setProfileToMessageUserData] = useState([]);
+  // const [activeView, setActiveView] = useState('profile');
 
   const API_POSTS_URL = "http://localhost:5000/api/posts";
   const API_CARI_POST = "http://localhost:5000/api/cariPosts";
+  const API_GET_USER_ID = "http://localhost:5000/api/getUsersById";
 
   const BACKEND_URL = "http://localhost:5000";
 
@@ -82,6 +88,7 @@ export default function Dashboard() {
     setPostSaya((prev) => !prev);
     setIsProfile(false);
     setCariOrang(false);
+    setMessage(false);
   };
   const handleCariOrang = async (e) => {
     e.preventDefault();
@@ -89,6 +96,17 @@ export default function Dashboard() {
     setIsProfile(false);
     setPostSaya(false);
     setProfileId(null);
+    setMessage(false);
+  };
+  const handleMessage = async (e) => {
+    e.preventDefault();
+    setMessage((prev) => !prev);
+    setIsProfile(false);
+    setPostSaya(false);
+    setProfileId(null);
+    setCariOrang(false);
+    setProfileToMessageUserId(null);
+    setProfileToMessageUserData([]);
   };
 
   const HandleCariPost = async (e) => {
@@ -117,10 +135,45 @@ export default function Dashboard() {
     }, 500);
   };
   const postsToDisplay = cariPost.trim() !== "" ? hasilCariPost : posts;
+  const handleProfileMessage = async (userId) => {
+    setProfileToMessageUserId(userId);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return;
+      }
+      const getUserData = await axios.get(
+        API_GET_USER_ID,
+        {
+          params: { userTujuan: userId },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      const userData = getUserData.data.user;
+      setProfileToMessageUserData(userData);
+      setMessage(true);
+      setIsProfile(false);
+      setPostSaya(false);
+      setProfileId(null);
+      setCariOrang(false);
+      // setActiveView('message')
+      console.log(userId);
+    } catch (error) {
+      console.error("Error mengambil data conversation:", error);
+      setProfileToMessageUserId(null);
+      setProfileToMessageUserData(null);
+      // setActiveView('profile');
+    }
+  };
   function handleIsProfile(userId) {
     setCariOrang(false);
     setPostSaya(false);
+    setMessage(false);
     if (profileId === userId) {
       setIsProfile(false);
       setProfileId(null);
@@ -129,11 +182,14 @@ export default function Dashboard() {
     setIsProfile(true);
     setProfileId(userId);
   }
+  // profileToMessageUserData ? alert(profileToMessageUserData.username) : "";
   return (
     <>
       <div
         className={`kontenerDashboard ${
-          postSaya || isProfile || cariOrang ? "with-right-sidebar" : ""
+          postSaya || isProfile || cariOrang || message
+            ? "with-right-sidebar"
+            : ""
         }`}
       >
         <div className="kiri">
@@ -162,6 +218,10 @@ export default function Dashboard() {
             <div className="SidebarCariOrang" onClick={handleCariOrang}>
               <i class="fa-solid fa-magnifying-glass"></i>
               <h3>Cari Orang</h3>
+            </div>
+            <div className="SidebarMessage" onClick={handleMessage}>
+              <i class="fa-solid fa-paper-plane"></i>
+              <h3>Pesan</h3>
             </div>
           </div>
           <div className="logout">
@@ -201,7 +261,10 @@ export default function Dashboard() {
         )}
         {isProfile ? (
           <div className="kanan">
-            <Profile profileId={profileId} />
+            <Profile
+              profileId={profileId}
+              handleProfileMessage={handleProfileMessage}
+            />
           </div>
         ) : (
           ""
@@ -209,6 +272,16 @@ export default function Dashboard() {
         {cariOrang ? (
           <div className="kanan">
             <CariOrang handleIsProfile={handleIsProfile} />
+          </div>
+        ) : (
+          ""
+        )}
+        {message ? (
+          <div className="kanan">
+            <Message
+              profileToMessageUserData={profileToMessageUserData}
+              profileToMessageUserId={profileToMessageUserId}
+            />
           </div>
         ) : (
           ""
